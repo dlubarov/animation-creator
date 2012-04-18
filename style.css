@@ -1,0 +1,49 @@
+body {
+  font-family: "Trebuchet MS";
+}
+
+h1 {
+  font-size: 150%;
+  margin: 0.5em 0;
+  text-align: center;
+}
+
+#main {
+  width: 1280px;
+  height: 480px;
+  margin: 0 auto;
+}
+
+#editor {
+  position: relative;
+  width: 640px;
+  height: 100%;
+  float: left;
+  font-size: 11pt;
+}
+
+#video {
+  border: none;
+  width: 640px;
+  height: 100%;
+  float: left;
+}
+
+#bar {
+  margin-top: 30px;
+  text-align: center;
+}
+
+#playPause {
+  width: 60px;
+}
+
+#slider {
+  display: inline;
+  width: 500px;
+  margin: 0 30px;
+}
+
+#timing {
+  text-align: center;
+}
