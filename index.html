@@ -6,6 +6,7 @@
     <script src="jquery-1.7.2.js" type="text/javascript"></script>
     <script src="src/ace.js" type="text/javascript" charset="utf-8"></script>
     <script src="Three.js" type="text/javascript"></script>
+    <script src="download.js" type="text/javascript"></script>
     <script src="main.js" type="text/javascript"></script>
   </head>
   <body>
@@ -45,9 +46,9 @@ renderer.render(scene, camera);
         /
         <span id="duration">2:14</span>
       </span>
-      <button onclick="downloadVideo()">Download</button>
+      <button onclick="startDownload()">Download</button>
     </div>
 
-    <audio onchange="console.log('ya')" id="music" src="gaga.mp3" preload="auto">No audio support.</audio>
+    <audio id="music" src="gaga.mp3" preload="auto">No audio support.</audio>
   </body>
 </html>

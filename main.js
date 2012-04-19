@@ -3,56 +3,6 @@ var codeFunc;
 var renderer;
 var playing = false;
 var timeout;
-var fps = 0.1;
-
-function getFrameAsBuffer() {
-  var canvas = $("#video").get(0);
-
-  // take apart data URL
-  var parts = canvas.toDataURL().match(/data:([^;]*)(;base64)?,([0-9A-Za-z+/]+)/);
-  // assume base64 encoding
-  var binStr = atob(parts[3]);
-
-  // convert to binary in ArrayBuffer
-  var buf = new ArrayBuffer(binStr.length);
-  var view = new Uint8Array(buf);
-  for(var i = 0; i < view.length; ++i) {
-    view[i] = binStr.charCodeAt(i);
-  }
-  return buf;
-}
-
-function getAllFramesData() {
-  var dur = duration();
-  var lastPercent = -1;
-  var builder = new WebKitBlobBuilder();
-  console.info("Encoding...");
-  for (var t = 0; t < dur; t += 1/fps) {
-    var percent = Math.floor(t/dur*100);
-    if (percent > lastPercent) {
-      console.info("   ..." + percent + "%");
-      lastPercent = percent;
-    }
-    setTime(t); refresh();
-    var data = getFrameAsBuffer();
-    var len = data.byteLength;
-    len = new Uint32Array([len]);
-    builder.append(len.buffer);
-    builder.append(data);
-  }
-  return builder.getBlob("application/octet-stream");
-}
-
-function downloadVideo() {
-  if (playing) { playOrPause(); }
-  var blob = getAllFramesData();
-  console.info("Blob size is " + Math.floor(blob.size/1000) + " kb");
-  var uri = webkitURL.createObjectURL(blob);
-  console.info("Offering download...");
-  console.info(uri);
-  //window.open(uri, "result");
-  location.href = uri;
-}
 
 function formatTime(t) {
   var mins = Math.floor(t / 60), secs = Math.floor(t % 60);
@@ -131,7 +81,8 @@ function time() {
 }
 
 function setTime(newTime) {
-  $("#music").get(0).currentTime = newTime;
+  var music = $("#music").get(0);
+  music.currentTime = newTime;
 }
 
 function width() {
