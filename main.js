@@ -3,20 +3,28 @@ var codeFunc;
 var renderer;
 var playing = false;
 var timeout;
-var fps = 0.1;
+var fps = 10;
 
-// Gets base 64 encoded PNG data for the current frame.
-function getFrameData() {
+function getFrameAsBuffer() {
   var canvas = $("#video").get(0);
-  var data = canvas.toDataURL("image/png");
-  data = data.replace(/^data:image\/(png|jpg);base64,/, "");
-  return data;
+
+  // take apart data URL
+  var parts = canvas.toDataURL().match(/data:([^;]*)(;base64)?,([0-9A-Za-z+/]+)/);
+  // assume base64 encoding
+  var binStr = atob(parts[3]);
+
+  // convert to binary in ArrayBuffer
+  var buf = new ArrayBuffer(binStr.length);
+  var view = new Uint8Array(buf);
+  for(var i = 0; i < view.length; i++)
+    view[i] = binStr.charCodeAt(i);
+  return buf;
 }
 
 function getAllFramesData() {
   var dur = duration();
-  var parts = [];
   var lastPercent = -1;
+  var builder = new WebKitBlobBuilder();
   console.info("Encoding...");
   for (var t = 0; t < dur; t += 1/fps) {
     var percent = Math.floor(t/dur*100);
@@ -25,24 +33,19 @@ function getAllFramesData() {
       lastPercent = percent;
     }
     setTime(t); refresh();
-    parts.push(getFrameData());
+    builder.append(getFrameAsBuffer());
   }
-  console.info("Concatenating...");
-  var data = parts.join("|");
-  data = Base64.encode(data);
-  return data;
+  return builder.getBlob("application/octet-stream");
 }
 
 function downloadVideo() {
-  if (playing) {
-    playOrPause();
-  }
-  var data = getAllFramesData();
-  console.info("Blob size is " + Math.floor(data.length/1000) + " kb");
-  console.info("Constructing data URI...");
-  var uri = "data:application/octet-stream;base64," + data;
+  if (playing) { playOrPause(); }
+  var blob = getAllFramesData();
+  console.info("Blob size is " + Math.floor(blob.size/1000) + " kb");
+  var uri = webkitURL.createObjectURL(blob);
   console.info("Offering download...");
-  //window.open(uri);
+  console.info(uri);
+  //window.open(uri, "result");
   location.href = uri;
 }
 
@@ -98,7 +101,8 @@ function save() {
 }
 
 function onEdit() {
-  updateCode();
+  var code = getCode();
+  updateCode(code);
   refresh();
 
   if (timeout !== undefined) {
@@ -137,8 +141,12 @@ function getCode() {
   return editor.getSession().getValue();
 }
 
-function updateCode() {
-  codeFunc = new Function(getCode());
+function updateCode(code) {
+  try {
+    codeFunc = new Function(code);
+  } catch (err) {
+    console.warn("syntax error");
+  }
 }
 
 window.onload = function() {
@@ -147,10 +155,11 @@ window.onload = function() {
   session.setMode("ace/mode/javascript");
   session.setUseSoftTabs(true);
   session.setTabSize(2);
-  session.on('change', onEdit);
+  session.on('change', function() {setTimeout(onEdit, 10)});
 
-  session.setValue(localStorage.getItem("code"));
-  updateCode();
+  var code = localStorage.getItem("code");
+  session.setValue(code);
+  updateCode(session.getValue());
 
   renderer = new THREE.CanvasRenderer({
     canvas: $("#video").get(0),
