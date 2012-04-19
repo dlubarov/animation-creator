@@ -3,7 +3,7 @@ var codeFunc;
 var renderer;
 var playing = false;
 var timeout;
-var fps = 10;
+var fps = 0.1;
 
 function getFrameAsBuffer() {
   var canvas = $("#video").get(0);
@@ -16,8 +16,9 @@ function getFrameAsBuffer() {
   // convert to binary in ArrayBuffer
   var buf = new ArrayBuffer(binStr.length);
   var view = new Uint8Array(buf);
-  for(var i = 0; i < view.length; i++)
+  for(var i = 0; i < view.length; ++i) {
     view[i] = binStr.charCodeAt(i);
+  }
   return buf;
 }
 
@@ -33,7 +34,11 @@ function getAllFramesData() {
       lastPercent = percent;
     }
     setTime(t); refresh();
-    builder.append(getFrameAsBuffer());
+    var data = getFrameAsBuffer();
+    var len = data.byteLength;
+    len = new Uint32Array([len]);
+    builder.append(len.buffer);
+    builder.append(data);
   }
   return builder.getBlob("application/octet-stream");
 }

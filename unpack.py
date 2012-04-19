@@ -8,11 +8,16 @@ def save_image(i, data):
   with open(fname, 'w') as f:
     f.write(data)
 
-def unpack():
-  data = stdin.read()
-  parts = data.split('|')
-  parts = [b64decode(p) for p in parts]
-  for i, part in enumerate(parts):
-    save_image(i, part)
+def unpack(f):
+  i = 0
+  while True:
+    l = f.read(4)
+    if l == "":
+      break
+    l = map(ord, l)
+    l = l[3] << 24 | l[2] << 16 | l[1] << 8  | l[0]
+    data = f.read(l)
+    save_image(i, data)
+    i += 1
 
-unpack()
+unpack(stdin)
