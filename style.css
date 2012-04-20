@@ -10,7 +10,7 @@ h1 {
 
 #main {
   width: 1280px;
-  height: 480px;
+  height: 100%;
   margin: 0 auto;
 }
 
@@ -22,28 +22,32 @@ h1 {
   font-size: 11pt;
 }
 
-#video {
-  border: none;
+#videoContainer {
   width: 640px;
-  height: 100%;
   float: left;
 }
 
+#video {
+  width: 640px;
+  height: 480px;
+  border: none;
+}
+
 #bar {
-  margin-top: 30px;
   text-align: center;
 }
 
-#playPause {
-  width: 60px;
+#playPause, #download {
+  width: 80px;
 }
 
 #slider {
   display: inline;
   width: 500px;
-  margin: 0 30px;
+  margin: 15px 0;
 }
 
 #timing {
   text-align: center;
+  margin: 0 30px;
 }

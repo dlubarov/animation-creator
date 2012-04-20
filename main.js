@@ -2,7 +2,8 @@ var editor;
 var codeFunc;
 var renderer;
 var playing = false;
-var timeout;
+var saveTimeout;
+var refreshTimeout;
 
 function formatTime(t) {
   var mins = Math.floor(t / 60), secs = Math.floor(t % 60);
@@ -60,10 +61,11 @@ function onEdit() {
   updateCode(code);
   refresh();
 
-  if (timeout !== undefined) {
-    clearTimeout(timeout);
+  if (saveTimeout !== undefined) {
+    clearTimeout(saveTimeout);
+    saveTimeout = undefined;
   }
-  timeout = setTimeout("save()", 1000);
+  saveTimeout = setTimeout("save()", 1000);
 }
 
 function onSlide() {
@@ -111,7 +113,13 @@ window.onload = function() {
   session.setMode("ace/mode/javascript");
   session.setUseSoftTabs(true);
   session.setTabSize(2);
-  session.on('change', function() {setTimeout(onEdit, 10)});
+  session.on('change', function() {
+    if (refreshTimeout !== undefined) {
+      clearTimeout(refreshTimeout);
+      refreshTimeout = undefined;
+    }
+    refreshTimeout = setTimeout(onEdit, 1000);
+  });
 
   var code = localStorage.getItem("code");
   session.setValue(code);
