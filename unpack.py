@@ -4,7 +4,10 @@ from sys import stdin
 from base64 import b64decode
 
 def save_image(i, data):
-  fname = "out/frame_" + str(i) + ".png"
+  i = str(i)
+  while len(i) < 5:
+    i = "0" + i
+  fname = "out/frame_" + i + ".png"
   with open(fname, 'w') as f:
     f.write(data)
 

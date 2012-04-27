@@ -53,3 +53,11 @@ function finishDownload() {
   console.info("Offering download...");
   location.href = uri;
 }
+
+function testDownload(size) {
+  var bb = new WebKitBlobBuilder();
+  bb.append(new ArrayBuffer(size));
+  var blob = bb.getBlob("application/octet-stream");
+  //location.href = webkitURL.createObjectURL(blob);
+  window.open(webkitURL.createObjectURL(blob));
+}
