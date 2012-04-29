@@ -125,7 +125,7 @@ window.onload = function() {
   session.setValue(code);
   updateCode(session.getValue());
 
-  renderer = new THREE.CanvasRenderer({
+  renderer = new THREE.WebGLRenderer({
     canvas: $("#video").get(0),
   });
   renderer.setSize(width(), height());

@@ -1,6 +1,6 @@
 var bb;
 var downloadTime;
-var fps = 30;
+var fps = 29.97;
 var lastPercent;
 
 function getFrameAsBuffer() {
